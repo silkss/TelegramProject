@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,23 +15,12 @@ namespace TelegramLib;
 
 public class Mytelbot
 {
-    #region Props
-
-    #region PublicProps
-
     public const string Token = "2031108528:AAE9qpNIRCbpF23IufRJTO-0D2h7IyIf0gg";
     private readonly IRepository<UserModel> _repository;
     public UserModel Mytelbol = new();
 
-    #endregion
-
-    #region _privateProps
-
     private TelegramBotClient? _client;
     private CancellationTokenSource cts = new();
-    #endregion
-
-    #endregion
 
     public Mytelbot(IRepository<UserModel> repository)
     {
@@ -44,10 +34,6 @@ public class Mytelbot
         _repository = repository;
     }
 
-    #region Methods 
-
-    #region PublicMethods
-
     public async Task<TelegramBotClient> Init()
     {
         _client = new TelegramBotClient(Token);
@@ -58,10 +44,17 @@ public class Mytelbot
 
         return _client;
     }
+    public async Task SendMessageAsync(string message, IEnumerable<UserModel> recievers)
+    {
+        if (_client == null) return;
 
-    #endregion
-
-    #region protectedMethods
+        foreach (var reciever in recievers)
+        {
+            var msg = $"Dear {reciever.FirstName}, {message}";
+            await _client.SendTextMessageAsync(chatId: reciever.Id,
+                text: msg);
+        }
+    }
 
     protected static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
@@ -74,7 +67,6 @@ public class Mytelbot
         Console.WriteLine(ErrorMessage);
         return Task.CompletedTask;
     }
-
     protected async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         var handler = update.Type switch
@@ -102,7 +94,6 @@ public class Mytelbot
             await HandleErrorAsync(botClient, exception, cancellationToken);
         }
     }
-
     protected Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
     {
         Debug.WriteLine($"Receive message type: {message.Type}\t {message.Text}");
@@ -119,14 +110,10 @@ public class Mytelbot
         }
         return Task.CompletedTask;
     }
-
     protected Task UnknownUpdateHandlerAsync(ITelegramBotClient botClient, Update update)
     {
         Debug.WriteLine($"Unknown update type: {update.Type}");
         return Task.CompletedTask;
     }
 
-    #endregion
-
-    #endregion
 }

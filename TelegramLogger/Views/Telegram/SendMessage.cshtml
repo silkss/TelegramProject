@@ -1,0 +1,12 @@
+﻿@model MessageModel
+@{
+	ViewData["Title"] = "Send message";
+}
+
+<h1>Send message view.</h1>
+
+<form method="post" asp-action="SendMessage">
+	<label asp-for="Text"></label>
+	<input asp-for="Text" />
+	<input type="submit" value="Send" />
+</form>
