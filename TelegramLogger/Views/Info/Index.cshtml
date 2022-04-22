@@ -1,13 +1,14 @@
-﻿@model TelegramLib.TelegramUser
-
+﻿@model TelegramLib.Models.UserModel
 @{
-	ViewData["Title"] = "Telegram Home";
+    ViewData["Title"] = "Home Page";
 }
-<dl >
+<h1>Info view.</h1>
+
+<dl>
     <dt>
         @Html.DisplayNameFor(model => model.Id)
     </dt>
-    <dd class = "col-sm-10">
+    <dd>
         @Html.DisplayFor(model => model.Id)
     </dd>
     <dt>

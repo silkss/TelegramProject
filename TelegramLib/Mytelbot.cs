@@ -7,6 +7,8 @@ using Telegram.Bot.Exceptions;
 using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using TelegramLib.Interfaces;
+using TelegramLib.Models;
 
 namespace TelegramLib;
 
@@ -17,7 +19,8 @@ public class Mytelbot
     #region PublicProps
 
     public const string Token = "2031108528:AAE9qpNIRCbpF23IufRJTO-0D2h7IyIf0gg";
-    public TelegramUser Mytelbol = new();
+    private readonly IRepository<UserModel> _repository;
+    public UserModel Mytelbol = new();
 
     #endregion
 
@@ -29,7 +32,7 @@ public class Mytelbot
 
     #endregion
 
-    public Mytelbot()
+    public Mytelbot(IRepository<UserModel> repository)
     {
         Init().Result
             .StartReceiving(
@@ -37,6 +40,8 @@ public class Mytelbot
                 HandleErrorAsync,
                 new ReceiverOptions { AllowedUpdates = { } },
                 cts.Token);
+
+        _repository = repository;
     }
 
     #region Methods 
@@ -57,6 +62,7 @@ public class Mytelbot
     #endregion
 
     #region protectedMethods
+
     protected static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
     {
         var ErrorMessage = exception switch
@@ -99,8 +105,18 @@ public class Mytelbot
 
     protected Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
     {
-        Debug.WriteLine($"Receive message type: {message.Type}");
+        Debug.WriteLine($"Receive message type: {message.Type}\t {message.Text}");
+        if (message.Text == "/start")
+        {
+            UserModel new_user = new();
+            if (message.From is User user) 
+            {
+                new_user.Id = user.Id;
+                new_user.FirstName = user.FirstName;
 
+                return _repository.CreateAsync(new_user);
+            }
+        }
         return Task.CompletedTask;
     }
 
@@ -109,6 +125,7 @@ public class Mytelbot
         Debug.WriteLine($"Unknown update type: {update.Type}");
         return Task.CompletedTask;
     }
+
     #endregion
 
     #endregion

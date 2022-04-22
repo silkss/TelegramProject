@@ -1,0 +1,31 @@
+﻿@model IEnumerable<UserModel>
+@{
+	ViewData["Title"] = "Telegram users";
+}
+
+<h1>Users view</h1>
+<table>
+	<thead>
+		<tr>
+			<th>
+				@Html.DisplayNameFor(model => model.Id)
+			</th>
+			<th>
+				@Html.DisplayNameFor(model => model.FirstName)
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+			<tr>
+				<td>
+					@Html.DisplayFor(modelItem => item.Id)
+				</td>
+				<td>
+					@Html.DisplayFor(modelItem => item.FirstName)
+				</td>
+			</tr>	
+		}
+	</tbody>
+</table>
